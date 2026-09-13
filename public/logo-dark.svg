@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 104" fill="none">
+  <!-- Document Icon (Electric Cyan/Blue on Dark) -->
+  <g transform="translate(0, 0)">
+    <!-- Folded corner fill -->
+    <path d="M 60 8 L 60 27 C 60 31 63 34 67 34 L 86 34 Z" fill="#1E3A8A" />
+    
+    <!-- Outer Document Outline -->
+    <path d="M 86 36 L 86 86 C 86 93.5 80 99.5 72.5 99.5 L 21.5 99.5 C 14 99.5 8 93.5 8 86 L 8 18 C 8 10.5 14 4.5 21.5 4.5 L 58 4.5 L 86 32.5 Z" 
+          stroke="#38BDF8" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round" />
+    
+    <!-- Inner Fold Stroke -->
+    <path d="M 58 4.5 L 58 27 C 58 31 61 34 65 34 L 86 34" 
+          stroke="#38BDF8" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round" />
+
+    <!-- Two Horizontal Note Lines -->
+    <line x1="26" y1="58" x2="68" y2="58" stroke="#38BDF8" stroke-width="8.5" stroke-linecap="round" />
+    <line x1="26" y1="76" x2="68" y2="76" stroke="#38BDF8" stroke-width="8.5" stroke-linecap="round" />
+  </g>
+
+  <!-- Typography "relay" in White with Accent "y" -->
+  <text x="108" y="78" font-family="'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif" font-size="80" font-weight="800" letter-spacing="-1.5">
+    <tspan fill="#FFFFFF">rela</tspan><tspan fill="#38BDF8">y</tspan>
+  </text>
+</svg>
