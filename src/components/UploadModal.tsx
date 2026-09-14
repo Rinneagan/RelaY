@@ -240,7 +240,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div className="modal-overlay" onClick={onClose}>
       <div
         className="modal-card"
         style={{ maxWidth: '680px', maxHeight: '92vh', overflowY: 'auto' }}

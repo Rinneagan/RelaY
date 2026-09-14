@@ -112,6 +112,7 @@
   border: 1px solid var(--border-light);
 }
 
+[data-theme="dark"] .modal-overlay,
 [data-theme="dark"] .modal-backdrop {
   background: rgba(0, 0, 0, 0.75);
 }
@@ -1594,7 +1595,8 @@ html, body {
 }
 
 /* Modals Common Overlay */
-.modal-overlay {
+.modal-overlay,
+.modal-backdrop {
   position: fixed;
   inset: 0;
   background: rgba(15, 23, 42, 0.6);

@@ -203,7 +203,7 @@ export const DocumentView: React.FC<DocumentViewProps> = ({
 
       {/* Report Modal */}
       {isReportOpen && (
-        <div className="modal-backdrop" onClick={() => setIsReportOpen(false)}>
+        <div className="modal-overlay" onClick={() => setIsReportOpen(false)}>
           <div
             className="modal-card"
             style={{ maxWidth: '440px' }}
