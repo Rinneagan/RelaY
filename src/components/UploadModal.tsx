@@ -108,12 +108,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
           setIsUploading(false);
           setUploadSuccess(true);
 
-          confetti({
-            particleCount: 120,
-            spread: 90,
-            origin: { y: 0.6 },
-          });
-
+          // Build and register the new document FIRST — before any effects that could throw
           const newDoc: StudyDocument = {
             id: `doc-${Date.now()}`,
             title: title.trim(),
@@ -224,7 +219,20 @@ export const UploadModal: React.FC<UploadModalProps> = ({
             comments: [],
           };
 
+          // Always call onUploadSuccess first — this is the critical path
           onUploadSuccess(newDoc);
+
+          // Confetti is purely cosmetic — wrap in try-catch so it NEVER breaks the upload flow
+          try {
+            confetti({
+              particleCount: 120,
+              spread: 90,
+              origin: { y: 0.6 },
+            });
+          } catch (_e) {
+            // confetti failed silently (e.g. CSP headers on Netlify) — upload already succeeded
+          }
+
         }
         return next;
       });
