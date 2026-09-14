@@ -1117,6 +1117,9 @@ export const INITIAL_USER: UserProfile = {
   isPremium: false,
   freeUnlocksLeft: 3,
   uploadedDocs: [],
+  followedCourseIds: [],
+  studyStreak: 1,
+  lastVisitDate: new Date().toISOString().split('T')[0],
   savedStudylists: [
     {
       id: 'list-1',
@@ -1136,3 +1139,4 @@ export const INITIAL_USER: UserProfile = {
     }
   ]
 };
+

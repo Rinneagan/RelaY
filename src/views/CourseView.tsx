@@ -6,6 +6,8 @@ import { ArrowLeft, BookOpen, Users, Star, UploadCloud, Bell, BellOff, Filter } 
 interface CourseViewProps {
   course: Course;
   documents: StudyDocument[];
+  isFollowing: boolean;
+  onToggleFollow: () => void;
   onBack: () => void;
   onSelectDocument: (doc: StudyDocument) => void;
   onOpenUpload: () => void;
@@ -16,13 +18,14 @@ interface CourseViewProps {
 export const CourseView: React.FC<CourseViewProps> = ({
   course,
   documents,
+  isFollowing,
+  onToggleFollow,
   onBack,
   onSelectDocument,
   onOpenUpload,
   onSaveToStudylist,
   savedDocIds,
 }) => {
-  const [isFollowing, setIsFollowing] = useState(false);
   const [selectedType, setSelectedType] = useState<string>('All');
 
   const courseDocs = documents.filter(
@@ -125,7 +128,7 @@ export const CourseView: React.FC<CourseViewProps> = ({
         {/* Action CTAs */}
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
           <button
-            onClick={() => setIsFollowing(!isFollowing)}
+            onClick={onToggleFollow}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -134,15 +137,17 @@ export const CourseView: React.FC<CourseViewProps> = ({
               borderRadius: 'var(--radius-full)',
               fontSize: '13px',
               fontWeight: 700,
-              border: '1px solid var(--border-light)',
-              background: isFollowing ? 'var(--primary-light)' : '#FFF',
+              border: isFollowing ? '1px solid var(--primary)' : '1px solid var(--border-light)',
+              background: isFollowing ? 'var(--primary-light)' : 'var(--bg-surface)',
               color: isFollowing ? 'var(--primary)' : 'var(--text-secondary)',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
             }}
           >
             {isFollowing ? <BellOff size={15} /> : <Bell size={15} />}
-            <span>{isFollowing ? 'Following' : 'Follow Course'}</span>
+            <span>{isFollowing ? 'Following ✓' : 'Follow Course'}</span>
           </button>
+
 
           <button
             onClick={onOpenUpload}
@@ -203,20 +208,43 @@ export const CourseView: React.FC<CourseViewProps> = ({
           ))}
         </div>
       ) : (
-        <div style={{ textAlign: 'center', padding: '60px 0', background: '#FFF', borderRadius: 'var(--radius-lg)' }}>
-          <BookOpen size={36} color="#94A3B8" style={{ marginBottom: '12px' }} />
-          <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)' }}>
-            No documents found under "{selectedType}"
+        <div style={{ textAlign: 'center', padding: '64px 24px', background: 'var(--bg-surface)', borderRadius: 'var(--radius-xl)', border: '2px dashed var(--border-light)' }}>
+          {/* Animated empty state icon */}
+          <div style={{ position: 'relative', display: 'inline-block', marginBottom: '20px' }}>
+            <div style={{ width: '80px', height: '80px', borderRadius: '20px', background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}>
+              <BookOpen size={36} color="var(--primary)" />
+            </div>
+            <div style={{ position: 'absolute', top: '-6px', right: '-6px', width: '24px', height: '24px', background: 'var(--accent-emerald)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid var(--bg-surface)' }}>
+              <UploadCloud size={13} color="#fff" />
+            </div>
+          </div>
+
+          <h3 style={{ fontSize: '17px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '6px' }}>
+            Be the first to upload for {course.code}!
           </h3>
-          <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '4px', marginBottom: '16px' }}>
-            Do you have past questions, solutions, or lecture slides for {course.code}? Upload them to help your classmates!
+          <p style={{ fontSize: '13.5px', color: 'var(--text-secondary)', maxWidth: '380px', margin: '0 auto 24px auto', lineHeight: '1.6' }}>
+            {selectedType !== 'All'
+              ? `No ${selectedType} found yet for ${course.name}.`
+              : `${course.name} has no study materials yet.`}
+            {' '}Help your classmates and earn <strong style={{ color: 'var(--accent-emerald)' }}>+50 Tek Credits</strong>!
           </p>
-          <button className="btn-upload" onClick={onOpenUpload} style={{ margin: '0 auto' }}>
-            <UploadCloud size={16} />
-            <span>Upload notes for {course.code}</span>
-          </button>
+
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <button className="btn-upload" onClick={onOpenUpload} style={{ margin: 0 }}>
+              <UploadCloud size={16} />
+              <span>Upload for {course.code} (+50 Credits)</span>
+            </button>
+            <button
+              onClick={onToggleFollow}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: isFollowing ? 'var(--primary-light)' : 'transparent', color: isFollowing ? 'var(--primary)' : 'var(--text-secondary)', border: '1.5px solid', borderColor: isFollowing ? 'var(--primary)' : 'var(--border-light)', borderRadius: 'var(--radius-full)', padding: '10px 18px', fontSize: '13px', fontWeight: 700, cursor: 'pointer' }}
+            >
+              {isFollowing ? <BellOff size={15} /> : <Bell size={15} />}
+              <span>{isFollowing ? 'Unfollow' : 'Follow — get notified when pasco drops'}</span>
+            </button>
+          </div>
         </div>
       )}
     </div>
   );
 };
+

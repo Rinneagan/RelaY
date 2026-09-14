@@ -313,6 +313,42 @@ export const UploadsDashboardView: React.FC<UploadsDashboardViewProps> = ({
           </div>
         </div>
 
+        {/* Card: Study Streak */}
+        <div
+          style={{
+            background: user.studyStreak >= 7
+              ? 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)'
+              : '#FFFFFF',
+            borderRadius: '18px',
+            padding: '24px',
+            border: user.studyStreak >= 7 ? '1px solid #FCD34D' : '1px solid #E2E8F0',
+            boxShadow: user.studyStreak >= 7
+              ? '0 4px 20px rgba(251, 191, 36, 0.25)'
+              : '0 4px 16px rgba(0, 0, 0, 0.04)',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+            <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: user.studyStreak >= 7 ? '#FEF9C3' : '#FFF7ED', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#D97706' }}>
+              <Flame size={22} />
+            </div>
+            {user.studyStreak >= 7 && (
+              <span style={{ fontSize: '11px', fontWeight: 700, background: '#FCD34D', color: '#78350F', padding: '3px 8px', borderRadius: '6px' }}>
+                🏅 STREAK SCHOLAR
+              </span>
+            )}
+          </div>
+          <div style={{ fontSize: '13px', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            Study Streak
+          </div>
+          <div style={{ fontSize: '36px', fontWeight: 800, color: user.studyStreak >= 7 ? '#D97706' : '#0F172A', marginTop: '4px', letterSpacing: '-1px' }}>
+            {user.studyStreak} day{user.studyStreak !== 1 ? 's' : ''}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#D97706', fontWeight: 600, marginTop: '8px' }}>
+            <Flame size={14} />
+            <span>{user.studyStreak >= 7 ? '🔥 On fire! Keep it up!' : `${7 - user.studyStreak} more days to Streak Scholar badge`}</span>
+          </div>
+        </div>
+
         {/* Card 3: Uploads & Shared Files */}
         <div
           style={{

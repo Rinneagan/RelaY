@@ -13,6 +13,7 @@ import { CourseView } from './views/CourseView';
 import { DocumentView } from './views/DocumentView';
 import { StudylistsView } from './views/StudylistsView';
 import { UploadsDashboardView } from './views/UploadsDashboardView';
+import { LeaderboardView } from './views/LeaderboardView';
 
 import {
   KNUST_COLLEGES,
@@ -30,8 +31,13 @@ import type {
 
 export function App() {
   const [currentView, setCurrentView] = useState<
-    'home' | 'programme' | 'course' | 'document' | 'studylists' | 'uploads'
+    'home' | 'programme' | 'course' | 'document' | 'studylists' | 'uploads' | 'leaderboard'
   >('home');
+
+  // Dark mode
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    return localStorage.getItem('relay-dark-mode') === 'true';
+  });
 
   const [colleges] = useState(KNUST_COLLEGES);
   const [programmes, setProgrammes] = useState<KnustProgramme[]>(KNUST_PROGRAMMES);
@@ -54,6 +60,30 @@ export function App() {
 
   // Toast notifications
   const { showToast } = useToast();
+
+  // Apply / remove dark mode class on html element
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isDarkMode) {
+      root.setAttribute('data-theme', 'dark');
+    } else {
+      root.removeAttribute('data-theme');
+    }
+    localStorage.setItem('relay-dark-mode', String(isDarkMode));
+  }, [isDarkMode]);
+
+  const handleToggleDarkMode = () => setIsDarkMode((prev) => !prev);
+
+  // Study streak — update on each app load
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0];
+    setUser((prev) => {
+      if (prev.lastVisitDate === today) return prev;
+      const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+      const newStreak = prev.lastVisitDate === yesterday ? prev.studyStreak + 1 : 1;
+      return { ...prev, studyStreak: newStreak, lastVisitDate: today };
+    });
+  }, []);
 
   // Global shortcut Ctrl+K
   useEffect(() => {
@@ -234,6 +264,27 @@ export function App() {
     }));
   };
 
+  // Course follow / watchlist
+  const handleToggleFollowCourse = (courseId: string) => {
+    setUser((prev) => {
+      const isFollowing = prev.followedCourseIds.includes(courseId);
+      const followedCourseIds = isFollowing
+        ? prev.followedCourseIds.filter((id) => id !== courseId)
+        : [...prev.followedCourseIds, courseId];
+      return { ...prev, followedCourseIds };
+    });
+    const course = courses.find((c) => c.id === courseId);
+    const isNowFollowing = !user.followedCourseIds.includes(courseId);
+    showToast({
+      type: isNowFollowing ? 'success' : 'info',
+      title: isNowFollowing ? `📌 Following ${course?.code}` : `Unfollowed ${course?.code}`,
+      message: isNowFollowing
+        ? `You'll be notified when new materials are added to ${course?.name}.`
+        : `Removed from your watchlist.`,
+      duration: 3000,
+    });
+  };
+
   return (
     <div className="app-container">
       {/* Global Navbar */}
@@ -250,6 +301,9 @@ export function App() {
         }}
         onOpenPremium={() => setIsPremiumOpen(true)}
         user={user}
+        isDarkMode={isDarkMode}
+        onToggleDarkMode={handleToggleDarkMode}
+        followedCount={user.followedCourseIds.length}
       />
 
       {/* Main Content Router */}
@@ -292,6 +346,8 @@ export function App() {
           <CourseView
             course={selectedCourse}
             documents={documents}
+            isFollowing={user.followedCourseIds.includes(selectedCourse.id)}
+            onToggleFollow={() => handleToggleFollowCourse(selectedCourse.id)}
             onBack={() => {
               if (selectedProgramme) {
                 setCurrentView('programme');
@@ -344,6 +400,16 @@ export function App() {
             onSelectDocument={handleSelectDocument}
             onOpenUpload={() => setIsUploadOpen(true)}
             onOpenPremium={() => setIsPremiumOpen(true)}
+          />
+        )}
+
+        {currentView === 'leaderboard' && (
+          <LeaderboardView
+            onBack={() => setCurrentView('home')}
+            onOpenUpload={() => {
+              setUploadInitialCourseId(undefined);
+              setIsUploadOpen(true);
+            }}
           />
         )}
       </div>

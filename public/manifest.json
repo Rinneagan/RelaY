@@ -1,0 +1,30 @@
+﻿{
+  "name": "RelaY — KNUST Study Platform",
+  "short_name": "RelaY",
+  "description": "Find verified past questions, pasco, lecture notes and exam prep for all KNUST courses.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F1629",
+  "theme_color": "#0056D2",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "lang": "en-GB"
+}

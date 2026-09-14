@@ -46,6 +46,126 @@
   --transition-normal: 0.25s ease;
 }
 
+/* ===== DARK MODE ===== */
+[data-theme="dark"] {
+  --primary: #4D9FFF;
+  --primary-hover: #6BB3FF;
+  --primary-light: #1A2744;
+  --primary-dark: #93C5FD;
+
+  --accent-emerald: #34D399;
+  --accent-emerald-light: #0D2E22;
+  --accent-amber: #FBBF24;
+  --accent-amber-light: #292109;
+  --accent-rose: #F87171;
+  --accent-rose-light: #2D1111;
+  --accent-purple: #A78BFA;
+  --accent-purple-light: #1E1535;
+
+  --bg-page: #0F1629;
+  --bg-surface: #1A2234;
+  --bg-subtle: #1E2A42;
+  --bg-input: #242E45;
+
+  --border-light: #2D3A52;
+  --border-focus: #4D9FFF;
+
+  --text-primary: #E2E8F0;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --text-inverse: #0F1629;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-modal: 0 20px 48px -10px rgba(0, 0, 0, 0.7);
+}
+
+/* Dark mode specific component overrides */
+[data-theme="dark"] .navbar {
+  background: rgba(15, 22, 41, 0.95);
+  border-bottom-color: var(--border-light);
+}
+
+[data-theme="dark"] .search-trigger-btn {
+  background: var(--bg-subtle);
+  border-color: var(--border-light);
+}
+
+[data-theme="dark"] .hero-section {
+  background: linear-gradient(135deg, #0D1B3E 0%, #0F1629 50%, #162040 100%);
+}
+
+[data-theme="dark"] .doc-card {
+  background: var(--bg-surface);
+  border-color: var(--border-light);
+}
+
+[data-theme="dark"] .doc-card:hover {
+  border-color: var(--primary);
+  box-shadow: 0 8px 24px rgba(77, 159, 255, 0.15);
+}
+
+[data-theme="dark"] .modal-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+}
+
+[data-theme="dark"] .modal-backdrop {
+  background: rgba(0, 0, 0, 0.75);
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  background: var(--bg-input);
+  border-color: var(--border-light);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .footer {
+  background: #080E1C;
+  border-top-color: var(--border-light);
+}
+
+[data-theme="dark"] .programme-card,
+[data-theme="dark"] .course-card {
+  background: var(--bg-surface);
+  border-color: var(--border-light);
+}
+
+[data-theme="dark"] .section-title {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .mobile-bottom-nav {
+  background: #141E33;
+  border-top-color: var(--border-light);
+}
+
+/* ===== PRINT STYLES for PDF download ===== */
+@media print {
+  .navbar, .mobile-bottom-nav, .footer, .doc-view-sidebar,
+  .doc-study-tools, .doc-view-header, .btn-back-link,
+  .unlock-gate, .doc-toolbar { display: none !important; }
+
+  .doc-view-container { display: block !important; }
+  .doc-view-main { width: 100% !important; margin: 0 !important; }
+
+  .doc-page-sheet {
+    page-break-after: always;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 20px !important;
+  }
+
+  body { font-size: 12pt; color: #000; background: #fff; }
+
+  @page { margin: 20mm; }
+}
+
+
 * {
   box-sizing: border-box;
   margin: 0;

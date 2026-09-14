@@ -14,7 +14,10 @@ import {
   Coins,
   UploadCloud,
   FileText,
-  Check
+  Check,
+  Flag,
+  Printer,
+  X as CloseX
 } from 'lucide-react';
 import { AiSummaryTab } from '../components/StudyTools/AiSummaryTab';
 import { AiQuizTab } from '../components/StudyTools/AiQuizTab';
@@ -49,6 +52,10 @@ export const DocumentView: React.FC<DocumentViewProps> = ({
   const [userVoted, setUserVoted] = useState<'up' | 'down' | null>(null);
   const [shareCopied, setShareCopied] = useState(false);
   const [unlockedLocally, setUnlockedLocally] = useState(false);
+  const [isReportOpen, setIsReportOpen] = useState(false);
+  const [reportReason, setReportReason] = useState('Incorrect answers');
+  const [reportNote, setReportNote] = useState('');
+  const [reportSubmitted, setReportSubmitted] = useState(false);
 
   const pageRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
@@ -73,9 +80,32 @@ export const DocumentView: React.FC<DocumentViewProps> = ({
   };
 
   const handleShare = () => {
-    navigator.clipboard.writeText(window.location.href);
+    // Use actual deployed URL, not localhost
+    const url = window.location.href.replace('localhost:5173', window.location.host);
+    navigator.clipboard.writeText(url).catch(() => {
+      // Fallback for browsers that block clipboard in non-https
+      const el = window.document.createElement('textarea');
+      el.value = url;
+      window.document.body.appendChild(el);
+      el.select();
+      window.document.execCommand('copy');
+      window.document.body.removeChild(el);
+    });
     setShareCopied(true);
-    setTimeout(() => setShareCopied(false), 2000);
+    setTimeout(() => setShareCopied(false), 2500);
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleReportSubmit = () => {
+    setReportSubmitted(true);
+    setTimeout(() => {
+      setIsReportOpen(false);
+      setReportSubmitted(false);
+      setReportNote('');
+    }, 2000);
   };
 
   const isUnlocked = user.isPremium || unlockedLocally || document.unlockedByDefault;
@@ -85,11 +115,7 @@ export const DocumentView: React.FC<DocumentViewProps> = ({
       onOpenPremium();
       return;
     }
-    const element = window.document.createElement('a');
-    const file = new Blob([`KNUST StuDocu Verified Material\nTitle: ${document.title}\nCourse: ${document.courseCode} - ${document.courseName}\nProgramme: ${document.programmeName}\nLevel: ${document.level} ${document.semester}\nUploaded by: ${document.author.name} (${document.author.hall})`], { type: 'text/plain' });
-    element.href = URL.createObjectURL(file);
-    element.download = `KNUST_${document.courseCode}_${document.title.replace(/\s+/g, '_')}.txt`;
-    element.click();
+    handlePrint();
   };
 
   return (
@@ -147,16 +173,113 @@ export const DocumentView: React.FC<DocumentViewProps> = ({
           {/* Share */}
           <button className="btn-doc-action" onClick={handleShare}>
             {shareCopied ? <Check size={15} color="#10B981" /> : <Share2 size={15} />}
-            <span>{shareCopied ? 'Copied Link!' : 'Share'}</span>
+            <span>{shareCopied ? 'Copied!' : 'Share'}</span>
+          </button>
+
+          {/* Print / PDF */}
+          <button className="btn-doc-action" onClick={handlePrint} title="Print or Save as PDF">
+            <Printer size={15} />
+            <span>Print</span>
+          </button>
+
+          {/* Report */}
+          <button
+            className="btn-doc-action"
+            onClick={() => setIsReportOpen(true)}
+            title="Report incorrect or misleading content"
+            style={{ color: 'var(--accent-rose)' }}
+          >
+            <Flag size={15} />
+            <span>Report</span>
           </button>
 
           {/* Download */}
           <button className="btn-doc-download" onClick={handleDownload}>
             <Download size={15} />
-            <span>Download Pasco</span>
+            <span>Download</span>
           </button>
         </div>
       </div>
+
+      {/* Report Modal */}
+      {isReportOpen && (
+        <div className="modal-backdrop" onClick={() => setIsReportOpen(false)}>
+          <div
+            className="modal-card"
+            style={{ maxWidth: '440px' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header">
+              <div>
+                <h3 className="modal-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Flag size={18} color="var(--accent-rose)" />
+                  <span>Report Document</span>
+                </h3>
+                <p className="modal-subtitle">Help us maintain quality on RelaY</p>
+              </div>
+              <button className="modal-close-btn" onClick={() => setIsReportOpen(false)}>
+                <CloseX size={20} />
+              </button>
+            </div>
+
+            <div className="modal-body">
+              {reportSubmitted ? (
+                <div style={{ textAlign: 'center', padding: '32px 16px' }}>
+                  <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'var(--accent-emerald-light)', color: 'var(--accent-emerald)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px auto' }}>
+                    <Check size={28} />
+                  </div>
+                  <h4 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '6px', color: 'var(--text-primary)' }}>Report Submitted</h4>
+                  <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+                    Thank you! Our team will review this document within 24 hours.
+                  </p>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div>
+                    <label style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary)', display: 'block', marginBottom: '6px' }}>
+                      Reason for report
+                    </label>
+                    <select
+                      value={reportReason}
+                      onChange={(e) => setReportReason(e.target.value)}
+                      style={{ width: '100%', padding: '10px 12px', borderRadius: 'var(--radius-md)', border: '1.5px solid var(--border-light)', fontSize: '13px', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
+                    >
+                      <option>Incorrect answers or solutions</option>
+                      <option>Not related to this course</option>
+                      <option>Plagiarised or duplicate content</option>
+                      <option>Poor quality / unreadable</option>
+                      <option>Inappropriate content</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary)', display: 'block', marginBottom: '6px' }}>
+                      Additional details <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>(optional)</span>
+                    </label>
+                    <textarea
+                      value={reportNote}
+                      onChange={(e) => setReportNote(e.target.value)}
+                      placeholder="Describe the issue in more detail..."
+                      rows={3}
+                      style={{ width: '100%', padding: '10px 12px', borderRadius: 'var(--radius-md)', border: '1.5px solid var(--border-light)', fontSize: '13px', resize: 'vertical', background: 'var(--bg-input)', color: 'var(--text-primary)', fontFamily: 'var(--font-sans)' }}
+                    />
+                  </div>
+
+                  <button
+                    onClick={handleReportSubmit}
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: 'var(--accent-rose)', color: '#fff', border: 'none', borderRadius: 'var(--radius-full)', padding: '12px 24px', fontSize: '14px', fontWeight: 700, cursor: 'pointer' }}
+                  >
+                    <Flag size={15} />
+                    Submit Report
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
 
       {/* Main Workspace (3 columns) */}
       <div className="doc-viewer-workspace">

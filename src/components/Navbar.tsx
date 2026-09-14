@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, UploadCloud, BookOpen, Sparkles, Coins, Bookmark, FileText, Home } from 'lucide-react';
+import { Search, UploadCloud, BookOpen, Sparkles, Coins, Bookmark, FileText, Home, Trophy, Moon, Sun } from 'lucide-react';
 import type { UserProfile } from '../types';
 
 interface NavbarProps {
@@ -9,6 +9,9 @@ interface NavbarProps {
   onOpenUpload: () => void;
   onOpenPremium: () => void;
   user: UserProfile;
+  isDarkMode: boolean;
+  onToggleDarkMode: () => void;
+  followedCount: number;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -18,6 +21,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenUpload,
   onOpenPremium,
   user,
+  isDarkMode,
+  onToggleDarkMode,
+  followedCount,
 }) => {
   return (
     <>
@@ -66,14 +72,37 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span className="nav-btn-text">Programmes</span>
               </button>
 
-              {/* Studylists link */}
+              {/* Leaderboard link */}
+              <button
+                className={`nav-icon-btn ${currentView === 'leaderboard' ? 'active' : ''}`}
+                onClick={() => onNavigate('leaderboard')}
+                title="Leaderboard — Top Contributors"
+              >
+                <Trophy size={18} />
+                <span className="nav-btn-text">Ranks</span>
+              </button>
+
+              {/* Studylists link — with notification dot if following courses */}
               <button
                 className={`nav-icon-btn ${currentView === 'studylists' ? 'active' : ''}`}
                 onClick={() => onNavigate('studylists')}
                 title="My Saved Studylists"
+                style={{ position: 'relative' }}
               >
                 <Bookmark size={18} />
-                <span className="nav-btn-text">Studylists</span>
+                {followedCount > 0 && (
+                  <span style={{
+                    position: 'absolute',
+                    top: '2px',
+                    right: '4px',
+                    width: '7px',
+                    height: '7px',
+                    background: 'var(--accent-emerald)',
+                    borderRadius: '50%',
+                    border: '1.5px solid var(--bg-surface)',
+                  }} />
+                )}
+                <span className="nav-btn-text">Saved</span>
               </button>
 
               {/* My Uploads link */}
@@ -95,6 +124,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <Sparkles size={15} color="#D97706" />
                 <span className="nav-btn-text">{user.isPremium ? 'Active' : 'Premium'}</span>
               </button>
+
+              {/* Dark mode toggle */}
+              <button
+                className="nav-icon-btn"
+                onClick={onToggleDarkMode}
+                title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                aria-label="Toggle dark mode"
+              >
+                {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
+
 
               {/* Upload CTA */}
               <button

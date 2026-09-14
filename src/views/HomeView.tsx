@@ -74,8 +74,61 @@ export const HomeView: React.FC<HomeViewProps> = ({
     return matchCat && matchCollege && matchSearch;
   });
 
+  // === Exam Countdown Logic ===
+  const getExamCountdown = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    // KNUST exam periods: Semester 1 = early December, Semester 2 = late May
+    const examDates = [
+      new Date(`${year}-12-02`),
+      new Date(`${year}-05-26`),
+      new Date(`${year + 1}-05-26`),
+      new Date(`${year + 1}-12-02`),
+    ];
+    const next = examDates
+      .map((d) => ({ date: d, diff: Math.ceil((d.getTime() - now.getTime()) / 86400000) }))
+      .filter((d) => d.diff > 0)
+      .sort((a, b) => a.diff - b.diff)[0];
+    return next;
+  };
+  const examCountdown = getExamCountdown();
+  const showExamBanner = examCountdown && examCountdown.diff <= 60 && !sessionStorage.getItem('relay-exam-banner-dismissed');
+
   return (
     <div>
+      {/* Exam Countdown Banner */}
+      {showExamBanner && (
+        <div style={{
+          background: 'linear-gradient(90deg, #78350F 0%, #92400E 50%, #78350F 100%)',
+          padding: '10px 24px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '12px',
+          position: 'relative',
+        }}>
+          <span style={{ fontSize: '18px' }}>🚨</span>
+          <span style={{ color: '#FDE68A', fontSize: '13.5px', fontWeight: 700 }}>
+            KNUST End of Semester exams in{' '}
+            <span style={{ color: '#FBBF24', fontSize: '18px', fontWeight: 800 }}>
+              {examCountdown.diff}
+            </span>
+            {' '}days — Download your pasco now and prepare!
+          </span>
+          <button
+            onClick={() => {
+              sessionStorage.setItem('relay-exam-banner-dismissed', '1');
+              const el = window.document.querySelector('.exam-countdown-banner') as HTMLElement;
+              if (el) el.style.display = 'none';
+            }}
+            style={{ position: 'absolute', right: '16px', background: 'none', border: 'none', color: '#FDE68A', cursor: 'pointer', fontSize: '18px', lineHeight: 1, padding: '4px 8px', opacity: 0.7 }}
+            aria-label="Dismiss exam banner"
+          >
+            ×
+          </button>
+        </div>
+      )}
+
       {/* Hero Section */}
       <section className="hero-section">
         <div className="container">

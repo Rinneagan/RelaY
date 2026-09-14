@@ -139,4 +139,8 @@ export interface UserProfile {
   freeUnlocksLeft: number;
   uploadedDocs: StudyDocument[];
   savedStudylists: Studylist[];
+  followedCourseIds: string[];
+  studyStreak: number;
+  lastVisitDate: string; // ISO date string e.g. '2026-09-14'
 }
+
